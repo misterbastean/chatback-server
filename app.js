@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 
-const routes = require("./routes");
+const routes = require("./routes/room.routes");
 
 // Express setup
 const app = express();
