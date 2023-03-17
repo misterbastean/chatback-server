@@ -56,7 +56,7 @@ const checkRoomExists = async (req, res) => {
 // Helpers
 const getRandomCode = (roomCodeLength) => {
   let text = "";
-  const possible = "AB";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < roomCodeLength; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
