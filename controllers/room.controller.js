@@ -25,7 +25,7 @@ const createRoom = async (req, res) => {
     roomCode = await generateNewRoomCode(4);
   } catch (err) {
     console.error(err);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
@@ -48,7 +48,7 @@ const createRoom = async (req, res) => {
   const newRoom = await Room.create(roomData);
 
   return res.status(201).json({
-    status: "Success",
+    success: true,
     room: newRoom,
   });
 };
