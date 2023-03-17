@@ -5,6 +5,10 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  roomName: {
+    type: String,
+    required: true,
+  },
   moderator: {
     type: {
       id: String,
@@ -22,6 +26,7 @@ const roomSchema = new mongoose.Schema({
   ],
   lastUpdatedAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date, required: true },
 });
 
 const Room = mongoose.model("Room", roomSchema);

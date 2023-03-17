@@ -5,8 +5,15 @@ const getRoom = async (req, res) => {
     "_id roomCode"
   );
 
+  if (!rooms) {
+    return res.status(404).json({
+      success: true,
+      message: `No room found with roomCode of ${req.params.roomCode}`,
+    });
+  }
+
   return res.status(200).json({
-    status: "Success",
+    success: true,
     rooms,
   });
 };
@@ -25,10 +32,18 @@ const createRoom = async (req, res) => {
   }
 
   // Create room in DB
+  const roomName = req.body.roomName ?? "Unnamed ChatBack";
   const roomData = {
-    ...req.body,
     roomCode,
+    roomName,
+    moderator: {
+      id: req.body.userId,
+      name: req.body.userName,
+    },
     messages: [],
+    expiresAt: new Date(
+      new Date().setDate(new Date().getDate() + req.body.roomDays)
+    ),
   };
   const newRoom = await Room.create(roomData);
 
@@ -65,10 +80,8 @@ const getRandomCode = (roomCodeLength) => {
 
 const generateNewRoomCode = async (roomCodeLength) => {
   let roomCode = await getRandomCode(roomCodeLength);
-  console.log("roomCode:", roomCode);
 
   for (let i = 0; i < 5; i++) {
-    console.log("Loop:", i);
     const duplicateCode = await Room.findOne({ roomCode });
     if (!duplicateCode) return roomCode;
     console.log(
