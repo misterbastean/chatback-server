@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 
 const routes = require("./routes/room.routes");
@@ -7,6 +8,7 @@ const routes = require("./routes/room.routes");
 // Express setup
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Rate limiting
 const apiLimiter = rateLimit({
