@@ -11,6 +11,7 @@ const roomSchema = new mongoose.Schema({
       name: String,
     },
     required: true,
+    _id: false,
   },
   messages: [
     {
