@@ -1,12 +1,10 @@
 require("dotenv").config();
 const express = require("express");
-const bodyParser = require("body-parser");
 const routes = require("./routes");
 
 // Express setup
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Routes
 app.use("/api/v1", routes);
