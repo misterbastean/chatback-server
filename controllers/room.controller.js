@@ -3,7 +3,7 @@ const { containsProfanity } = require("../utils/profanityFilter");
 
 const getRoom = async (req, res) => {
   const rooms = await Room.find({ roomCode: req.params.roomCode }).select(
-    "_id roomCode"
+    "_id roomCode roomName messages moderator.name"
   );
 
   if (!rooms) {
@@ -77,7 +77,7 @@ const checkRoomExists = async (req, res) => {
 };
 
 // Helpers
-const getRandomCode = async (roomCodeLength) => {
+const getRandomCode = (roomCodeLength) => {
   let text = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < roomCodeLength; i++) {
@@ -85,7 +85,7 @@ const getRandomCode = async (roomCodeLength) => {
   }
   // Check for profanity
   if (containsProfanity([text])) {
-    console.log("Profanity filtered:", text);
+    console.log("Profanity filtered from roomCode:", text);
     text = getRandomCode(roomCodeLength);
   }
   return text;
