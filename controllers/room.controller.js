@@ -1,4 +1,5 @@
 const Room = require("../models/Room");
+const { containsProfanity } = require("../utils/profanityFilter");
 
 const getRoom = async (req, res) => {
   const rooms = await Room.find({ roomCode: req.params.roomCode }).select(
@@ -32,6 +33,13 @@ const createRoom = async (req, res) => {
   }
 
   // Create room in DB
+  if (containsProfanity([req.body.userName, req.body.roomName])) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Profanity is not allowed in any room information, including username.",
+    });
+  }
   const roomName = req.body.roomName ?? "Unnamed ChatBack";
   const roomData = {
     roomCode,
@@ -69,11 +77,16 @@ const checkRoomExists = async (req, res) => {
 };
 
 // Helpers
-const getRandomCode = (roomCodeLength) => {
+const getRandomCode = async (roomCodeLength) => {
   let text = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   for (let i = 0; i < roomCodeLength; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  // Check for profanity
+  if (containsProfanity([text])) {
+    console.log("Profanity filtered:", text);
+    text = getRandomCode(roomCodeLength);
   }
   return text;
 };
