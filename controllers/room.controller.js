@@ -1,10 +1,13 @@
 const Room = require("../models/Room");
 
-const getRooms = (req, res) => {
-  console.log("Getting all room data");
+const getRoom = async (req, res) => {
+  const rooms = await Room.find({ roomCode: req.params.roomCode }).select(
+    "_id roomCode"
+  );
+
   return res.status(200).json({
     status: "Success",
-    rooms: ["Room data here"],
+    rooms,
   });
 };
 
@@ -29,4 +32,4 @@ const createRoom = async (req, res) => {
   });
 };
 
-module.exports = { getRooms, createRoom };
+module.exports = { getRoom, createRoom };
