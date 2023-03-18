@@ -3,8 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const http = require("http");
-const handleWs = require("./controllers/websocket.controller");
-
+const handleWs = require("./routes/websocket.routes");
 const routes = require("./routes/room.routes");
 
 // Express setup
