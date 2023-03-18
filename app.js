@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const http = require("http");
+const handleWs = require("./controllers/websocket.controller");
 
 const routes = require("./routes/room.routes");
 
@@ -22,7 +24,11 @@ app.use("/api/v1/rooms/:roomCode/checkRoomExists", apiLimiter);
 // Routes
 app.use("/api/v1", routes);
 
+// Websocket setup
+const server = http.createServer(app);
+handleWs(server);
+
 // Listen
-app.listen(3001, () => {
+server.listen(3001, () => {
   console.log("Started on port 3001");
 });
