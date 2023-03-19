@@ -19,6 +19,7 @@ const roomSchema = new mongoose.Schema({
   },
   messages: [
     {
+      userId: String,
       userName: String,
       text: String,
       postedDate: Date,
