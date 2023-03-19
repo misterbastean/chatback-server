@@ -19,9 +19,9 @@ const roomSchema = new mongoose.Schema({
   },
   messages: [
     {
-      user: String,
+      userName: String,
       text: String,
-      createdAt: Date,
+      postedDate: Date,
     },
   ],
   lastUpdatedAt: { type: Date, default: Date.now },
