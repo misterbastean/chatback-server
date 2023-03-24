@@ -9,13 +9,17 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  moderator: {
-    type: {
-      id: String,
-      name: String,
-    },
-    required: true,
-    _id: false,
+  members: {
+    type: [
+      {
+        userName: String,
+        role: {
+          type: String,
+          enum: ["moderator", "member"],
+        },
+      },
+    ],
+    default: [],
   },
   messages: [
     {

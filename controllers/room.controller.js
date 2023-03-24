@@ -3,7 +3,7 @@ const { containsProfanity } = require("../utils/profanityFilter");
 
 const getRoom = async (req, res) => {
   const rooms = await Room.find({ roomCode: req.params.roomCode }).select(
-    "_id roomCode roomName messages moderator.name"
+    "_id roomCode roomName messages"
   );
 
   if (!rooms) {
@@ -20,6 +20,7 @@ const getRoom = async (req, res) => {
 };
 
 const createRoom = async (req, res) => {
+  console.log("req.body:", req.body);
   // Generate new room code
   let roomCode;
   try {
@@ -40,14 +41,16 @@ const createRoom = async (req, res) => {
         "Profanity is not allowed in any room information, including username.",
     });
   }
-  const roomName = req.body.roomName ?? "Unnamed ChatBack";
+  const roomName = req.body.roomName || "Unnamed ChatBack";
   const roomData = {
     roomCode,
     roomName,
-    moderator: {
-      id: req.body.userId,
-      name: req.body.userName,
-    },
+    members: [
+      {
+        userName: req.body.userName,
+        role: "moderator",
+      },
+    ],
     messages: [],
     expiresAt: new Date(
       new Date().setDate(new Date().getDate() + req.body.roomDays)
