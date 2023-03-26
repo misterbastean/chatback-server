@@ -20,7 +20,6 @@ const getRoom = async (req, res) => {
 };
 
 const createRoom = async (req, res) => {
-  console.log("req.body:", req.body);
   // Generate new room code
   let roomCode;
   try {
@@ -61,6 +60,30 @@ const createRoom = async (req, res) => {
   return res.status(201).json({
     success: true,
     room: newRoom,
+  });
+};
+
+const joinRoom = async (req, res) => {
+  // Add user to room in DB
+  console.log("joinRoom req.body:", req.body);
+  const newMember = {
+    userName: req.body.userName,
+    role: "member",
+  };
+
+  const update = { $push: { members: newMember } };
+  const room = await Room.findOneAndUpdate(
+    { roomCode: req.body.roomCode.toUpperCase() },
+    update,
+    {
+      new: true,
+    }
+  );
+
+  // Respond with user details
+  res.status(200).json({
+    success: true,
+    room, // Update to just user info to prevent user spoofing
   });
 };
 
@@ -109,4 +132,4 @@ const generateNewRoomCode = async (roomCodeLength) => {
   throw new Error("Unable to generate unique room code.");
 };
 
-module.exports = { getRoom, createRoom, checkRoomExists };
+module.exports = { getRoom, createRoom, checkRoomExists, joinRoom };
