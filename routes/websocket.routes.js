@@ -23,7 +23,6 @@ const handleWs = (server) => {
     // Load all previous messages whenever a client joins
     socket.on("loadMessages", async () => {
       const room = await Room.findOne({ roomCode });
-
       if (!room) return; // TODO: Add error handling for room not found
 
       socket.emit("previousMessages", room.messages);
@@ -60,12 +59,19 @@ const handleWs = (server) => {
 
     // Leave the room if user closes the socket
     socket.on("disconnect", async () => {
-      const update = {
-        $pull: { members: { _id: userId, role: "member" } },
-      };
-      await Room.findOneAndUpdate({ roomCode }, update);
-      // Remove user from sockets map
+      const room = await Room.findOne({ roomCode });
 
+      // If user is not moderator, remove from room in DB
+      if (isModerator(room.members, userId)) {
+        const update = {
+          $pull: { members: { _id: userId, role: "member" } },
+        };
+        await Room.findOneAndUpdate({ roomCode }, update);
+      }
+
+      // Remove user from sockets map (all roles, since reconnect will add a new socket)
+      const socketIdToRemove = getSocketId(userId, roomCode);
+      sockets.delete(socketIdToRemove);
       socket.leave(roomCode);
     });
   });
@@ -73,5 +79,14 @@ const handleWs = (server) => {
 
 // Helpers
 const getSocketId = (userId, roomCode) => `${userId}-${roomCode}`;
+
+const isModerator = (arr, id) => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i]._id === id) {
+      return arr[i].role === "moderator";
+    }
+  }
+  return false;
+};
 
 module.exports = handleWs;
