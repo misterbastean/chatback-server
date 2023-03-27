@@ -12,8 +12,6 @@ const handleWs = (server) => {
   });
   io.on("connection", (socket) => {
     const { userId, roomCode } = socket.handshake.query;
-    console.log("userId1", userId);
-    console.log("roomCode1", roomCode);
 
     // Add WS to sockets map
     const socketId = getSocketId(userId, roomCode);
@@ -69,7 +67,6 @@ const handleWs = (server) => {
       const updatedRoom = await Room.findOneAndUpdate({ roomCode }, update, {
         new: true,
       });
-      console.log("Updated room:", updatedRoom);
       // Remove user from sockets map
 
       socket.leave(roomCode);
