@@ -60,13 +60,10 @@ const handleWs = (server) => {
 
     // Leave the room if user closes the socket
     socket.on("disconnect", async () => {
-      // TODO: Update to only remove if role !== "moderator". Use the $cond aggregation
       const update = {
         $pull: { members: { _id: userId, role: "member" } },
       };
-      const updatedRoom = await Room.findOneAndUpdate({ roomCode }, update, {
-        new: true,
-      });
+      await Room.findOneAndUpdate({ roomCode }, update);
       // Remove user from sockets map
 
       socket.leave(roomCode);
