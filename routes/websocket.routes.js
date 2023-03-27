@@ -62,7 +62,7 @@ const handleWs = (server) => {
     socket.on("disconnect", async () => {
       // TODO: Update to only remove if role !== "moderator". Use the $cond aggregation
       const update = {
-        $pull: { members: { _id: userId } },
+        $pull: { members: { _id: userId, role: "member" } },
       };
       const updatedRoom = await Room.findOneAndUpdate({ roomCode }, update, {
         new: true,
