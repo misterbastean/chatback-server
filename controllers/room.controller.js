@@ -55,48 +55,69 @@ const createRoom = async (req, res) => {
       new Date().setDate(new Date().getDate() + req.body.roomDays)
     ),
   };
-  const newRoom = await Room.create(roomData);
+  try {
+    const newRoom = await Room.create(roomData);
 
-  return res.status(201).json({
-    success: true,
-    room: newRoom,
-  });
+    return res.status(201).json({
+      success: true,
+      room: newRoom,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
 
 const joinRoom = async (req, res) => {
-  // Add user to room in DB
-  const newMember = {
-    userName: req.body.userName,
-    role: "member",
-  };
+  try {
+    // Add user to room in DB
+    const newMember = {
+      userName: req.body.userName,
+      role: "member",
+    };
 
-  const update = { $push: { members: newMember } };
-  const room = await Room.findOneAndUpdate(
-    { roomCode: req.body.roomCode.toUpperCase() },
-    update,
-    {
-      new: true,
-    }
-  );
+    const update = { $push: { members: newMember } };
+    const room = await Room.findOneAndUpdate(
+      { roomCode: req.body.roomCode.toUpperCase() },
+      update,
+      {
+        new: true,
+      }
+    );
 
-  // Respond with user details
-  res.status(200).json({
-    success: true,
-    room, // Update to just user info to prevent user spoofing
-  });
+    // Respond with user details
+    return res.status(200).json({
+      success: true,
+      room, // Update to just user info to prevent user spoofing
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
 
 const checkRoomExists = async (req, res) => {
-  const room = await Room.findOne({ roomCode: req.params.roomCode });
-  if (room) {
-    return res.status(200).json({
-      success: true,
-      message: `Room with roomCode of ${req.params.roomCode} exists.`,
-    });
-  } else {
-    return res.status(404).json({
+  try {
+    const room = await Room.findOne({ roomCode: req.params.roomCode });
+    if (room) {
+      return res.status(200).json({
+        success: true,
+        message: `Room with roomCode of ${req.params.roomCode} exists.`,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: `Room with roomCode of ${req.params.roomCode} does not exist.`,
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
       success: false,
-      message: `Room with roomCode of ${req.params.roomCode} does not exist.`,
+      message: err.message,
     });
   }
 };
