@@ -65,7 +65,6 @@ const createRoom = async (req, res) => {
 
 const joinRoom = async (req, res) => {
   // Add user to room in DB
-  console.log("joinRoom req.body:", req.body);
   const newMember = {
     userName: req.body.userName,
     role: "member",
