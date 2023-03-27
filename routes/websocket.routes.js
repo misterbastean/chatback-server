@@ -1,5 +1,8 @@
+const mongoose = require("mongoose");
 const Room = require("../models/Room");
 const NEW_MESSAGE_EVENT = "newChatMessage";
+
+const sockets = new Map();
 
 const handleWs = (server) => {
   const io = require("socket.io")(server, {
@@ -8,13 +11,19 @@ const handleWs = (server) => {
     },
   });
   io.on("connection", (socket) => {
+    const { userId, roomCode } = socket.handshake.query;
+    console.log("userId1", userId);
+    console.log("roomCode1", roomCode);
+
+    // Add WS to sockets map
+    const socketId = getSocketId(userId, roomCode);
+    sockets.set(socketId, socket);
+
     // Join a room
-    const { roomCode } = socket.handshake.query;
     socket.join(roomCode);
 
     // Load all previous messages whenever a client joins
     socket.on("loadMessages", async () => {
-      console.log("loadMessages WS event received");
       const room = await Room.findOne({ roomCode });
 
       if (!room) return; // TODO: Add error handling for room not found
@@ -29,6 +38,7 @@ const handleWs = (server) => {
         (user) => user._id.toString() === data.userId
       );
       if (!sendingUser) return; // TODO: handle incorrect/invalid userId submitted
+
       // Add message to room in DB
       newMessage = {
         text: data.text,
@@ -51,10 +61,23 @@ const handleWs = (server) => {
     });
 
     // Leave the room if user closes the socket
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
+      // TODO: Update to only remove if role !== "moderator". Use the $cond aggregation
+      const update = {
+        $pull: { members: { _id: userId } },
+      };
+      const updatedRoom = await Room.findOneAndUpdate({ roomCode }, update, {
+        new: true,
+      });
+      console.log("Updated room:", updatedRoom);
+      // Remove user from sockets map
+
       socket.leave(roomCode);
     });
   });
 };
+
+// Helpers
+const getSocketId = (userId, roomCode) => `${userId}-${roomCode}`;
 
 module.exports = handleWs;
