@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
 const Room = require("../models/Room");
 const NEW_MESSAGE_EVENT = "newChatMessage";
+const ERROR_EVENT = "error";
 
 const sockets = new Map();
 
@@ -23,7 +23,14 @@ const handleWs = (server) => {
     // Load all previous messages whenever a client joins
     socket.on("loadMessages", async () => {
       const room = await Room.findOne({ roomCode });
-      if (!room) return; // TODO: Add error handling for room not found
+      if (!room) {
+        // TODO: Add error handling for room not found
+        socket.emit(
+          ERROR_EVENT,
+          `Room with roomCode of ${roomCode} not found.`
+        );
+        // TODO: Need to handle this event on the FE
+      }
 
       socket.emit("previousMessages", room.messages);
     });
