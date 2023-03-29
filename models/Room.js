@@ -34,6 +34,9 @@ const roomSchema = new mongoose.Schema({
   expiresAt: { type: Date, required: true },
 });
 
+// Create TTL index so rooms are deleted at the end of their life
+roomSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 const Room = mongoose.model("Room", roomSchema);
 
 module.exports = Room;
