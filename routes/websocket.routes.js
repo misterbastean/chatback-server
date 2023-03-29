@@ -1,6 +1,7 @@
 const Room = require("../models/Room");
 const NEW_MESSAGE_EVENT = "newChatMessage";
 const ERROR_EVENT = "error";
+const { censorProfanity } = require("../utils/profanityFilter");
 
 const sockets = new Map();
 
@@ -44,9 +45,12 @@ const handleWs = (server) => {
       );
       if (!sendingUser) return; // TODO: handle incorrect/invalid userId submitted
 
+      // Censor profanity
+      const parsedText = censorProfanity(data.text);
+
       // Add message to room in DB
       newMessage = {
-        text: data.text,
+        text: parsedText,
         postedDate: data.postedDate,
         userName: sendingUser.userName,
       };
