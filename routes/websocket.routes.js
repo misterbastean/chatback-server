@@ -24,11 +24,12 @@ const handleWs = (server) => {
     socket.on("loadMessages", async () => {
       const room = await Room.findOne({ roomCode });
       if (!room) {
-        // TODO: Add error handling for room not found
-        socket.emit(
-          ERROR_EVENT,
-          `Room with roomCode of ${roomCode} not found.`
-        );
+        const errorBody = {
+          message: `Room with roomCode of ${roomCode} not found.`,
+          code: 404,
+        };
+        socket.emit(ERROR_EVENT, JSON.stringify(errorBody));
+        return;
         // TODO: Need to handle this event on the FE
       }
 
@@ -67,6 +68,7 @@ const handleWs = (server) => {
     // Leave the room if user closes the socket
     socket.on("disconnect", async () => {
       const room = await Room.findOne({ roomCode });
+      if (!room) return;
 
       // If user is not moderator, remove from room in DB
       if (isModerator(room.members, userId)) {
