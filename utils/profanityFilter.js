@@ -361,7 +361,6 @@ const profanityList = [
   "gook",
   "guiena",
   "h0r",
-  "hell",
   "helvete",
   "hoer",
   "honkey",
