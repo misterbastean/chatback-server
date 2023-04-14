@@ -25,6 +25,7 @@ const roomSchema = new mongoose.Schema({
     {
       userId: String,
       userName: String,
+      userRole: String,
       text: String,
       postedDate: Date,
     },

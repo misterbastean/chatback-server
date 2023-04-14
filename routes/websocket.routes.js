@@ -53,6 +53,7 @@ const handleWs = (server) => {
         text: parsedText,
         postedDate: data.postedDate,
         userName: sendingUser.userName,
+        userRole: sendingUser.role,
       };
       const update = { $push: { messages: newMessage } };
 
